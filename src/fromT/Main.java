@@ -1,3 +1,4 @@
+// kill them all!!
 package fromT; // 작업한거
 
 import java.io.BufferedOutputStream;
@@ -605,7 +606,8 @@ class BuildService {
 				html += "<tr>";
 				html += "<td>" + article.getId() + "</td>";
 				html += "<td>" + article.getRegDate() + "</td>";
-				html += "<td><a href=\"" + article.getId() + ".html\">" + article.getTitle() + "</a></td>";
+				html += "<td><a href=\"" + article.getId() + ".html\">";
+				html += "<td>" + article.getTitle() + "</a></td>";
 				html += "</tr>";
 			}
 
