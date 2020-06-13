@@ -1,41 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>whaaaaat?</title>
     <style>
-        body, ul, li{
-            margin: 0;
-            padding: 0;
+        body,
+        ul,
+        li {
+            margin: 0%;
+            padding: 0%;
             list-style: none;
         }
-        .con{
-            width: 1000px;
-            margin: 0 auto;
+
+        body {
+            background-color: #232323;
         }
 
-        .top-bar > .menu-box-1 > ul{
-            background-color: #afafaf;
-            display: flex;
+        a {
+            text-decoration: none;
+            color: white;
         }
-        .top-bar > .menu-box-1 > ul>li{
-            flex-grow: 1;
+
+        .site-header {
+            text-align: center;
+            background-color: gold;
         }
-        .top-bar > .menu-box-1 > ul>li>a{
+
+        .site-header {
             display: block;
-            padding: 10 0px;
+        }
+
+        .menu-box-1 {
+            text-align: center;
+            background-color: #232323;
+        }
+
+        .menu-box-1 ul {
+            display: inline-block;
+        }
+
+        .menu-box-1 ul>li {
+            display: inline-block;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .menu-box-1 ul ul {
+            background-color: #232323;
+            display: none;
+            position: absolute;
+            top: 0;
+            width: 200px;
+        }
+
+        .menu-box-1 ul>li>a {
+            display: block;
+            padding: 10px;
+            width: 150px;
+        }
+
+        .menu-box-1 ul>li:hover>a {
+            background-color: black;
+            color: white;
+            width: 150px;
+        }
+
+        .menu-box-1 ul>li:hover>ul {
+            display: block;
+            top: 100%;
+            width: 190px;
+            right: 0;
+            left: auto;
         }
     </style>
 </head>
+
 <body>
-    <div class = "top-bar con">
-        <div class="menu-box-1">
-            <ul>
-                <li><a href="../home/index.html">인덱스</a></li>
-                <li><a href="notice-list-1.html">공지사항 게시판</a></li>
-                <li><a href="free-list-1.html">자유 게시판</a></li>
-            </ul>
-        </div>
+    <div class="site-header">
+        <h1>S&D MVC</h1>
     </div>
-    
+    <nav class="menu-box-1">
+        <ul>
+            <li>
+                <a href="#">홈</a>
+            </li>
+            <li>
+                <a href="#">게시판</a>
+                <ul>
+                    <li><a href="#">공지 게시판</a></li>
+                    <li><a href="#">자유 게시판</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">통계</a>
+            </li>
+            <li>
+                <a href="#">개발자 블로그</a>
+                <ul>
+                    <li>
+                        <a href="https://to2.kr/bfp" target="_blank">이상범 블로그</a>
+                    </li>
+                    <li>
+                        <a href="https://to2.kr/bfe" target="_blank">김동연 블로그</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
