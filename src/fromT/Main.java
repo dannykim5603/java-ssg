@@ -580,10 +580,23 @@ class BuildService {
 	BuildService() {
 		articleService = Factory.getArticleService();
 	}
+//	public void buildIndex() {
+//		Util.makeDir("site_template/home");
+//		
+//		String head = Util.getFileContents("site_template/part/head.html");
+//		String foot = Util.getFileContents("site_template/part/foot.html");
+//		
+//		String html = head + foot;
+//		
+//		Util.writeFileContents("site_template/index.html" ,html);
+//	}
 
 	public void buildSite() {
 		Util.makeDir("site");
 		Util.makeDir("site/article");
+		Util.makeDir("site_template/resource");
+		Util.makeDir("site_template/home");
+		Util.makeDir("site_template/stat");
 		Util.makeDir("site_template/part");
 		Util.makeDir("site_template/article");
 		
