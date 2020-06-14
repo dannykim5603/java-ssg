@@ -7,31 +7,27 @@ li {
 }
 
 body {
-  background-color: #232323;
   background-image: url("https://i.pinimg.com/originals/85/28/a8/8528a8d1722dabfe66424c870a995006.jpg");
-  width: 1920px;
-  height: 1080px;
 }
 
 a {
   text-decoration: none;
   color: white;
-}
-.site-header {
-  text-align: center;
-  background-color: gold;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 7px;
 }
 
-.site-header {
-  display: block;
-}
 .menu-box-1 {
+  position: relative;
+  top: 100px;
+  bottom: auto;
   text-align: center;
-  background-color: #232323;
 }
 
 .menu-box-1 ul {
   display: inline-block;
+  /* border: white solid 2px; */
 }
 .menu-box-1 ul > li {
   display: inline-block;
@@ -40,26 +36,32 @@ a {
 }
 
 .menu-box-1 ul ul {
-  background-color: #232323;
   display: none;
   position: absolute;
   top: 0;
-  width: 200px;
 }
 .menu-box-1 ul > li > a {
   display: block;
   padding: 10px;
-  width: 150px;
+  width: 250px;
 }
 .menu-box-1 ul > li:hover > a {
-  background-color: black;
-  color: white;
-  width: 150px;
+  color: black;
+
+  /* width: 150px; */
 }
 .menu-box-1 ul > li:hover > ul {
   display: block;
   top: 100%;
-  width: 190px;
   right: 0;
   left: auto;
+}
+
+.center-text {
+  position: relative;
+  top: 300px;
+  text-align: center;
+  display: block;
+  color: #de7e73;
+  font-size: 40px;
 }
