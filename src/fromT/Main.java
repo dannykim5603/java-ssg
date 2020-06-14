@@ -283,13 +283,13 @@ class ArticleController extends Controller {
 		if (request.getActionName().equals("list")) {
 			if (request.getArg1() == null) {
 				System.out.println("리스트 페이지 번호를 입력해 주세요.");
-			} else if(request.getArg1() != null){
+			} else if (request.getArg1() != null) {
 				int num = Integer.parseInt(request.getArg1());
 				actionList(num);
 			} else if (request.getArg1() != null && request.getArg2() != null) {
 				int num = Integer.parseInt(request.getArg1());
 				String keyword = request.getArg2();
-				actionList(num , keyword);
+				actionList(num, keyword);
 			}
 		} else if (request.getActionName().equals("write")) {
 			actionWrite(request);
@@ -330,8 +330,6 @@ class ArticleController extends Controller {
 			}
 		}
 	}
-
-	
 
 	private void actionChangeBoard(int num) {
 
@@ -395,32 +393,45 @@ class ArticleController extends Controller {
 			articleService.modify(num, title, body);
 		}
 	}
-	
+
 	private void actionList(int num, String keyword) {
 		String code = Factory.getSession().getCurrentBoard().getCode();
 		List<Article> articles = articleService.getArticlesByBoardCode(code);
 		int end = num * 5;
 		int start = end - 5;
-		
+
 		for (int i = start; i < end; i++) {
-			if ( i >= articles.size()) {
+			if (i >= articles.size()) {
 				break;
-			}else if(articles.indexOf(keyword) != 0) {
+			} else if (articles.indexOf(keyword) != 0) {
 				System.out.println(articles.get(i));
 			}
 		}
-	}		
+	}
 
 	private void actionList(int num) {
 		String code = Factory.getSession().getCurrentBoard().getCode();
 		List<Article> articles = articleService.getArticlesByBoardCode(code);
 		int end = num * 5;
 		int start = end - 5;
-		
+
 		for (int i = start; i < end; i++) {
-			if ( i >= articles.size()) {
+			if (i >= articles.size()) {
 				break;
-			}else {
+			} else {
+				System.out.println(articles.get(i));
+			}
+		}
+	}
+
+	private void actionList() {
+		String code = Factory.getSession().getCurrentBoard().getCode();
+		List<Article> articles = articleService.getArticlesByBoardCode(code);
+
+		for (int i = 0; i < articles.size(); i++) {
+			if (i >= articles.size()) {
+				break;
+			} else {
 				System.out.println(articles.get(i));
 			}
 		}
@@ -594,13 +605,13 @@ class BuildService {
 	public void buildSite() {
 		Util.makeDir("site");
 		Util.makeDir("site/article");
+		Util.makeDir("site/home");
 		Util.makeDir("site_template/resource");
 		Util.makeDir("site_template/home");
 		Util.makeDir("site_template/stat");
 		Util.makeDir("site_template/part");
 		Util.makeDir("site_template/article");
-		
-		
+
 		String head = Util.getFileContents("site_template/part/head.html");
 		String foot = Util.getFileContents("site_template/part/foot.html");
 
@@ -620,8 +631,8 @@ class BuildService {
 				html += "<tr>";
 				html += "<td>" + article.getId() + "</td>";
 				html += "<td>" + article.getRegDate() + "</td>";
-				html += "<td><a href=\"" + article.getId() + ".html\">";
-				html += "<td>" + article.getTitle() + "</a></td>";
+				html += "<td>" + article.getMemberId() + "</td>";
+				html += "<td><a href=\"" + article.getId() + ".html\">"+article.getTitle()+"</a></div>";
 				html += "</tr>";
 			}
 
@@ -637,18 +648,48 @@ class BuildService {
 
 		for (Article article : articles) {
 			String html = "";
+			
+			String template = Util.getFileContents("site_template/article/article.html");
 
-			html += "<div>제목 : " + article.getTitle() + "</div>";
-			html += "<div>내용 : " + article.getBody() + "</div>";
-			html += "<div><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></div>";
-			html += "<div><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
+			html += "<div class = article-header>" + article.getTitle() + "</div>";
+			html += "<div class = article-content>" + article.getBody() + "</div>";
+			html += "<div class = header>";
+			html += "<div class = before><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></div>";
+			html += "<div class = after><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
+			html += "</div class>";
+			
+			html = template.replace("${TR}",html);
 			
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);
 		}
-	}
 
+// 인덱스 화면 
+		String fileName = "index.html";
+		String html = "";
+		List<Article> noticeArticles = articleService.getArticlesByBoardCode("notice");
+
+		String indexTemplate = Util.getFileContents("site_template/home/index.html");
+
+		for (Article article : noticeArticles) {
+			html += "<tr>";
+			html += "<td>" + article.getId() + "</td>";
+			html += "<td>" + article.getRegDate() + "</td>";
+			html += "<td>" + article.getMemberId() + "</td>";
+			html += "<td><a href=\"" +"../article/"+ article.getId() + ".html\">"+article.getTitle()+"</a></div>";
+			html += "</tr>";
+		}
+		html = indexTemplate.replace("${TN}", html);
+		
+
+		html = head + html + foot;
+
+		Util.writeFileContents("site/home/" + fileName, html);
+
+// 통계 화면
+		
+	}
 }
 
 class ArticleService {
