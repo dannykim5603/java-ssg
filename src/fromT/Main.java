@@ -688,7 +688,9 @@ class BuildService {
 		Util.writeFileContents("site/home/" + fileName, html);
 
 // 통계 화면
-		
+		String fileName2 = "stat.html";
+		String html2 = "";
+		int totlaMember = 0; 
 	}
 }
 
