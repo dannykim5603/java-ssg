@@ -21,11 +21,42 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+public class Main {
+	private static boolean workStarted;
 
-class Main {
+	static {
+		workStarted = false;
+	}
+
 	public static void main(String[] args) {
+		startWork();
 		App app = new App();
 		app.start();
+//		System.out.println(Thread.currentThread() + " : 메인작업1");
+//		System.out.println(Thread.currentThread() + " : 메인작업2");
+//		System.out.println(Thread.currentThread() + " : 메인작업3");
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+		}
+		
+		workStarted = false;
+	}
+
+	private static void startWork() {
+		workStarted = true;
+		new Thread(() -> {
+			while (workStarted) {
+				
+				Factory.getBuildService().buildSite();
+//				System.out.println(Thread.currentThread() + " : 작업");
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+				}
+			}
+		}).start();
 	}
 }
 
