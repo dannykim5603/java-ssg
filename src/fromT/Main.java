@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -283,13 +284,13 @@ class ArticleController extends Controller {
 		if (request.getActionName().equals("list")) {
 			if (request.getArg1() == null) {
 				System.out.println("리스트 페이지 번호를 입력해 주세요.");
-			} else if (request.getArg1() != null) {
+			} else if (request.getArg2() == null) {
 				int num = Integer.parseInt(request.getArg1());
 				actionList(num);
-			} else if (request.getArg1() != null && request.getArg2() != null) {
+			} else if (request.getArg2() != null && request.getArg3() == null) {
 				int num = Integer.parseInt(request.getArg1());
 				String keyword = request.getArg2();
-				actionList(num, keyword);
+				actionSearch(num, keyword);
 			}
 		} else if (request.getActionName().equals("write")) {
 			actionWrite(request);
@@ -389,7 +390,8 @@ class ArticleController extends Controller {
 	}
 
 	private void actionDetail(int num) {
-		System.out.println(articleService.getArticlebyId(num));
+		Article article = articleService.getArticlebyId(num);
+		System.out.println(article);
 	}
 
 	private void actionModify(int num) {
@@ -405,26 +407,31 @@ class ArticleController extends Controller {
 		}
 	}
 
-	private void actionList(int num, String keyword) {
-		String code = Factory.getSession().getCurrentBoard().getCode();
-		List<Article> articles = articleService.getArticlesByBoardCode(code);
-		int end = num * 5;
-		int start = end - 5;
-
-		for (int i = start; i < end; i++) {
-			if (i >= articles.size()) {
-				break;
-			} else if (articles.indexOf(keyword) != 0) {
-				System.out.println(articles.get(i));
+	private void actionSearch(int num, String keyword) {
+		List<Article> searchList = actionList(num);
+		List<Article> searchList2 = new ArrayList();
+//		
+		searchList2.clear();
+		for (int i = 0; i < searchList.size(); i++) {
+			Article a = searchList.get(i);
+			if (a.getTitle().indexOf(keyword) != -1) { // 검색어가 존재함
+				searchList2.add(a);
 			}
+		}
+		if (searchList2.size() > 0) {
+			System.out.println(searchList2);
+		} else {
+			System.out.println("검색결과가 없습니다.");
 		}
 	}
 
-	private void actionList(int num) {
+	private List<Article> actionList(int num) {
 		String code = Factory.getSession().getCurrentBoard().getCode();
 		List<Article> articles = articleService.getArticlesByBoardCode(code);
 		int end = num * 5;
 		int start = end - 5;
+		List<Article> searchList = new ArrayList();
+//		searchList.clear();
 
 		for (int i = start; i < end; i++) {
 			if (i >= articles.size()) {
@@ -432,7 +439,9 @@ class ArticleController extends Controller {
 			} else {
 				System.out.println(articles.get(i));
 			}
+			searchList.add(articles.get(i));
 		}
+		return searchList;
 	}
 
 	private void actionWrite(Request request) {
@@ -680,6 +689,20 @@ class BuildService {
 			html += "<td><a href=\"" + "../article/" + article.getId() + ".html\">" + article.getTitle() + "</a></div>";
 			html += "</tr>";
 		}
+
+		html += "<br>";
+
+		List<Article> freearticles = articleService.getArticlesByBoardCode("free");
+
+		for (Article article : noticeArticles) {
+			html += "<tr>";
+			html += "<td>" + article.getId() + "</td>";
+			html += "<td>" + article.getRegDate() + "</td>";
+			html += "<td>" + article.getMemberId() + "</td>";
+			html += "<td><a href=\"" + "../article/" + article.getId() + ".html\">" + article.getTitle() + "</a></div>";
+			html += "</tr>";
+		}
+
 		html = indexTemplate.replace("${TN}", html);
 
 		html = head + html + foot;
@@ -916,7 +939,7 @@ class DB {
 
 	public Article getArticlebyId(int id) {
 		List<Article> articles = getArticles();
-
+		
 		for (Article article : articles) {
 			if (article.getId() == id) {
 				return article;
@@ -1229,7 +1252,6 @@ class Board extends Dto {
 	public void setCode(String code) {
 		this.code = code;
 	}
-
 }
 
 class Article extends Dto {
@@ -1238,6 +1260,8 @@ class Article extends Dto {
 	private String title;
 	private String body;
 	private int hit;
+	private int like;
+
 
 	public int getHit() {
 		return hit;
@@ -1255,7 +1279,7 @@ class Article extends Dto {
 		this.like = like;
 	}
 
-	private int like;
+
 
 	public Article() {
 
@@ -1305,6 +1329,7 @@ class Article extends Dto {
 	public void setBody(String body) {
 		this.body = body;
 	}
+
 }
 
 class ArticleReply extends Dto {
