@@ -22,10 +22,42 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-class Main {
+public class Main {
+	private static boolean workStarted;
+
+	static {
+		workStarted = false;
+	}
+
 	public static void main(String[] args) {
+		startWork();
 		App app = new App();
 		app.start();
+//		System.out.println(Thread.currentThread() + " : 메인작업1");
+//		System.out.println(Thread.currentThread() + " : 메인작업2");
+//		System.out.println(Thread.currentThread() + " : 메인작업3");
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+		}
+		
+		workStarted = false;
+	}
+
+	private static void startWork() {
+		workStarted = true;
+		new Thread(() -> {
+			while (workStarted) {
+				
+				Factory.getBuildService().buildSite();
+//				System.out.println(Thread.currentThread() + " : 작업");
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+				}
+			}
+		}).start();
 	}
 }
 
@@ -956,8 +988,8 @@ class DB {
 
 		String templateForHead = Util.getFileContents("site_template/part/head.html");
 
-		htmlHead += "<li><a href=\"../../site/article/" + board.getCode() + "-list-1.html\">" + board.getName() + "</a></li><br>${li}";
-		htmlHead = templateForHead.replace("<li><a href=\"../../site/article/" + board.getCode() + "-list-1.html\">" + board.getName() + "</a></li><br>${li}", "${li}");
+		htmlHead += "<li><a href=\"../../site/article/" + board.getCode() + "-list-1.html\">" + board.getName() + "</a></li>${li}";
+		htmlHead = templateForHead.replace(htmlHead, "${li}");
 
 		Util.writeFileContents("site_template/part/head.html", htmlHead);
 	}
