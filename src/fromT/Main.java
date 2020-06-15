@@ -370,7 +370,18 @@ class ArticleController extends Controller {
 				break;
 			}
 		}
+
+		String htmlHead = "";
+
+		String templateForHead = Util.getFileContents("site_template/part/head.html");
+
+		htmlHead += "<li><a href=\"../../site/article/" + boardCode + "-list-1.html\">" + boardName + "</a></li>${li}";
+		htmlHead = templateForHead.replace("${li}", htmlHead);
+
+		Util.writeFileContents("site_template/part/head.html", htmlHead);
 		articleService.makeBoard(boardName, boardCode);
+		System.out.println(boardName + "이(가) 생성되었습니다.");
+
 	}
 
 	private void actionDelete(int num) {
@@ -416,19 +427,6 @@ class ArticleController extends Controller {
 		int start = end - 5;
 
 		for (int i = start; i < end; i++) {
-			if (i >= articles.size()) {
-				break;
-			} else {
-				System.out.println(articles.get(i));
-			}
-		}
-	}
-
-	private void actionList() {
-		String code = Factory.getSession().getCurrentBoard().getCode();
-		List<Article> articles = articleService.getArticlesByBoardCode(code);
-
-		for (int i = 0; i < articles.size(); i++) {
 			if (i >= articles.size()) {
 				break;
 			} else {
@@ -591,16 +589,6 @@ class BuildService {
 	BuildService() {
 		articleService = Factory.getArticleService();
 	}
-//	public void buildIndex() {
-//		Util.makeDir("site_template/home");
-//		
-//		String head = Util.getFileContents("site_template/part/head.html");
-//		String foot = Util.getFileContents("site_template/part/foot.html");
-//		
-//		String html = head + foot;
-//		
-//		Util.writeFileContents("site_template/index.html" ,html);
-//	}
 
 	public void buildSite() {
 		Util.makeDir("site");
@@ -632,7 +620,7 @@ class BuildService {
 				html += "<td>" + article.getId() + "</td>";
 				html += "<td>" + article.getRegDate() + "</td>";
 				html += "<td>" + article.getMemberId() + "</td>";
-				html += "<td><a href=\"" + article.getId() + ".html\">"+article.getTitle()+"</a></div>";
+				html += "<td><a href=\"" + article.getId() + ".html\">" + article.getTitle() + "</a></div>";
 				html += "</tr>";
 			}
 
@@ -642,13 +630,25 @@ class BuildService {
 
 			Util.writeFileContents("site/article/" + fileName, html);
 		}
+// 게시판 헤드 추가	
+		for (Board board : boards) {
+
+			String htmlHead = "";
+
+			String templateForHead = Util.getFileContents("site_template/part/head.html");
+
+			htmlHead = templateForHead.replace("${li}", htmlHead);
+
+			Util.writeFileContents("site_template/part/head.html", htmlHead);
+
+		}
 
 // 게시물 별 파일 생성
 		List<Article> articles = articleService.getArticles();
 
 		for (Article article : articles) {
 			String html = "";
-			
+
 			String template = Util.getFileContents("site_template/article/article.html");
 
 			html += "<div class = article-header>" + article.getTitle() + "</div>";
@@ -657,9 +657,9 @@ class BuildService {
 			html += "<div class = before><a href=\"" + (article.getId() - 1) + ".html\">이전글</a></div>";
 			html += "<div class = after><a href=\"" + (article.getId() + 1) + ".html\">다음글</a></div>";
 			html += "</div class>";
-			
-			html = template.replace("${TR}",html);
-			
+
+			html = template.replace("${TR}", html);
+
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.getId() + ".html", html);
@@ -677,18 +677,17 @@ class BuildService {
 			html += "<td>" + article.getId() + "</td>";
 			html += "<td>" + article.getRegDate() + "</td>";
 			html += "<td>" + article.getMemberId() + "</td>";
-			html += "<td><a href=\"" +"../article/"+ article.getId() + ".html\">"+article.getTitle()+"</a></div>";
+			html += "<td><a href=\"" + "../article/" + article.getId() + ".html\">" + article.getTitle() + "</a></div>";
 			html += "</tr>";
 		}
 		html = indexTemplate.replace("${TN}", html);
-		
 
 		html = head + html + foot;
 
 		Util.writeFileContents("site/home/" + fileName, html);
 
 // 통계 화면
-		
+
 	}
 }
 
@@ -929,6 +928,15 @@ class DB {
 
 	public void deleteBoard(Board board) {
 		tables.get("board").deleteRow(board);
+		
+		String htmlHead = "";
+
+		String templateForHead = Util.getFileContents("site_template/part/head.html");
+
+		htmlHead += "<li><a href=\"../../site/article/" + board.getCode() + "-list-1.html\">" + board.getName() + "</a></li><br>${li}";
+		htmlHead = templateForHead.replace("<li><a href=\"../../site/article/" + board.getCode() + "-list-1.html\">" + board.getName() + "</a></li><br>${li}", "${li}");
+
+		Util.writeFileContents("site_template/part/head.html", htmlHead);
 	}
 
 	public void modifyArticleById(Article article, String title, String body) {
@@ -1058,6 +1066,7 @@ class Table<T> {
 		File file = new File(FilePath);
 
 		Util.deleteFile(FilePath);
+
 		System.out.println("삭제되었습니다.");
 
 	}
@@ -1228,6 +1237,25 @@ class Article extends Dto {
 	private int memberId;
 	private String title;
 	private String body;
+	private int hit;
+
+	public int getHit() {
+		return hit;
+	}
+
+	public void setHit(int hit) {
+		this.hit = hit;
+	}
+
+	public int getLike() {
+		return like;
+	}
+
+	public void setLike(int like) {
+		this.like = like;
+	}
+
+	private int like;
 
 	public Article() {
 
