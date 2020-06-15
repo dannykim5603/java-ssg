@@ -726,7 +726,7 @@ class BuildService {
 
 		List<Article> freearticles = articleService.getArticlesByBoardCode("free");
 
-		for (Article article : noticeArticles) {
+		for (Article article : freearticles) {
 			html += "<tr>";
 			html += "<td>" + article.getId() + "</td>";
 			html += "<td>" + article.getRegDate() + "</td>";
