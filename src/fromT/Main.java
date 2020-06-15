@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Main {
 	private static boolean workStarted;
 
@@ -402,7 +403,18 @@ class ArticleController extends Controller {
 				break;
 			}
 		}
+
+		String htmlHead = "";
+
+		String templateForHead = Util.getFileContents("site_template/part/head.html");
+
+		htmlHead += "<li><a href=\"../../site/article/" + boardCode + "-list-1.html\">" + boardName + "</a></li>${li}";
+		htmlHead = templateForHead.replace("${li}", htmlHead);
+
+		Util.writeFileContents("site_template/part/head.html", htmlHead);
 		articleService.makeBoard(boardName, boardCode);
+		System.out.println(boardName + "이(가) 생성되었습니다.");
+
 	}
 
 	private void actionDelete(int num) {
@@ -462,19 +474,6 @@ class ArticleController extends Controller {
 			searchList.add(articles.get(i));
 		}
 		return searchList;
-	}
-
-	private void actionList() {
-		String code = Factory.getSession().getCurrentBoard().getCode();
-		List<Article> articles = articleService.getArticlesByBoardCode(code);
-
-		for (int i = 0; i < articles.size(); i++) {
-			if (i >= articles.size()) {
-				break;
-			} else {
-				System.out.println(articles.get(i));
-			}
-		}
 	}
 
 	private void actionWrite(Request request) {
@@ -631,16 +630,6 @@ class BuildService {
 	BuildService() {
 		articleService = Factory.getArticleService();
 	}
-//	public void buildIndex() {
-//		Util.makeDir("site_template/home");
-//		
-//		String head = Util.getFileContents("site_template/part/head.html");
-//		String foot = Util.getFileContents("site_template/part/foot.html");
-//		
-//		String html = head + foot;
-//		
-//		Util.writeFileContents("site_template/index.html" ,html);
-//	}
 
 	public void buildSite() {
 		Util.makeDir("site");
@@ -681,6 +670,18 @@ class BuildService {
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + fileName, html);
+		}
+// 게시판 헤드 추가	
+		for (Board board : boards) {
+
+			String htmlHead = "";
+
+			String templateForHead = Util.getFileContents("site_template/part/head.html");
+
+			htmlHead = templateForHead.replace("${li}", htmlHead);
+
+			Util.writeFileContents("site_template/part/head.html", htmlHead);
+
 		}
 
 // 게시물 별 파일 생성
@@ -982,6 +983,15 @@ class DB {
 
 	public void deleteBoard(Board board) {
 		tables.get("board").deleteRow(board);
+		
+		String htmlHead = "";
+
+		String templateForHead = Util.getFileContents("site_template/part/head.html");
+
+		htmlHead += "<li><a href=\"../../site/article/" + board.getCode() + "-list-1.html\">" + board.getName() + "</a></li>${li}";
+		htmlHead = templateForHead.replace(htmlHead, "${li}");
+
+		Util.writeFileContents("site_template/part/head.html", htmlHead);
 	}
 
 	public void modifyArticleById(Article article, String title, String body) {
@@ -1111,6 +1121,7 @@ class Table<T> {
 		File file = new File(FilePath);
 
 		Util.deleteFile(FilePath);
+
 		System.out.println("삭제되었습니다.");
 
 	}
@@ -1283,6 +1294,25 @@ class Article extends Dto {
 	private int hit;
 	private int like;
 
+
+	public int getHit() {
+		return hit;
+	}
+
+	public void setHit(int hit) {
+		this.hit = hit;
+	}
+
+	public int getLike() {
+		return like;
+	}
+
+	public void setLike(int like) {
+		this.like = like;
+	}
+
+
+
 	public Article() {
 
 	}
@@ -1332,21 +1362,6 @@ class Article extends Dto {
 		this.body = body;
 	}
 
-	public int getHit() {
-		return hit;
-	}
-
-	public void setHit(int hit) {
-		this.hit = hit;
-	}
-
-	public int getLike() {
-		return like;
-	}
-
-	public void setLike(int like) {
-		this.like = like;
-	}
 }
 
 class ArticleReply extends Dto {
